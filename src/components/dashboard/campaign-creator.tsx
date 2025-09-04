@@ -4,12 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { goalDecomposition, GoalDecompositionOutput } from '@/ai/flows/goal-decomposition';
-import { BrainCircuit, Check, Loader2, Wand2 } from 'lucide-react';
+import { BrainCircuit, Calendar, Check, Link, Loader2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '../ui/badge';
+import { Separator } from '../ui/separator';
 
 export interface CampaignPlan {
   goal: string;
-  tasks: string[];
+  moves: Array<{
+    task: string;
+    dueDate: string;
+    resources: string[];
+  }>;
 }
 
 interface CampaignCreatorProps {
@@ -19,7 +25,7 @@ interface CampaignCreatorProps {
 export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
   const [goal, setGoal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [decomposedTasks, setDecomposedTasks] = useState<GoalDecompositionOutput | null>(null);
+  const [decomposedPlan, setDecomposedPlan] = useState<GoalDecompositionOutput | null>(null);
   const { toast } = useToast();
 
   const handleDecomposition = async (e: React.FormEvent) => {
@@ -27,11 +33,11 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
     if (!goal) return;
 
     setIsLoading(true);
-    setDecomposedTasks(null);
+    setDecomposedPlan(null);
 
     try {
       const result = await goalDecomposition({ goal });
-      setDecomposedTasks(result);
+      setDecomposedPlan(result);
     } catch (error) {
       console.error(error);
       toast({
@@ -45,14 +51,14 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
   };
 
   const handleApprovePlan = () => {
-    if (decomposedTasks && decomposedTasks.tasks && goal) {
-      onPlanApproved({ goal, tasks: decomposedTasks.tasks });
+    if (decomposedPlan && decomposedPlan.moves && goal) {
+      onPlanApproved({ goal, moves: decomposedPlan.moves });
       toast({
         title: "Campaign Created!",
         description: `The "${goal}" campaign has been added to your board.`,
       });
     }
-    setDecomposedTasks(null);
+    setDecomposedPlan(null);
     setGoal('');
   };
 
@@ -70,7 +76,7 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
       <CardContent>
         <form onSubmit={handleDecomposition} className="flex flex-col sm:flex-row gap-2">
           <Input 
-            placeholder="e.g., Launch a new marketing website by Q4" 
+            placeholder="e.g., Plan a 2-week trip to Japan for next spring" 
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
             disabled={isLoading}
@@ -88,17 +94,47 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
           </div>
         )}
 
-        {decomposedTasks && decomposedTasks.tasks.length > 0 && (
+        {decomposedPlan && decomposedPlan.moves.length > 0 && (
           <div className="mt-6">
-            <h3 className="font-semibold font-headline mb-3">Suggested Moves for "{goal}":</h3>
-            <ul className="space-y-2">
-              {decomposedTasks.tasks.map((task, index) => (
-                <li key={index} className="flex items-start gap-3 bg-secondary/60 p-3 rounded-md transition-all animate-in fade-in-50 slide-in-from-bottom-2">
-                  <Check className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                  <span className="flex-1 text-sm">{task}</span>
-                </li>
+            <h3 className="font-semibold font-headline mb-3">Suggested Campaign for "{goal}":</h3>
+            <div className="space-y-4 rounded-lg border bg-secondary/30 p-4">
+              {decomposedPlan.moves.map((move, index) => (
+                <div key={index} className="transition-all animate-in fade-in-50 slide-in-from-bottom-2">
+                  <div className="flex items-start gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm">
+                        {index + 1}
+                      </div>
+                      {index < decomposedPlan.moves.length - 1 && (
+                        <div className="w-px h-4 bg-border mt-1"></div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">{move.task}</p>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="h-4 w-4" />
+                            <span>{move.dueDate}</span>
+                          </div>
+                      </div>
+                      {move.resources.length > 0 && (
+                        <div className="mt-2">
+                          <h4 className="font-semibold text-xs mb-1.5 text-muted-foreground">Resources:</h4>
+                          <ul className="space-y-1">
+                            {move.resources.map((resource, rIndex) => (
+                              <li key={rIndex} className="flex items-center gap-2 text-sm">
+                                <Link className="h-3 w-3 text-primary/80"/>
+                                <span>{resource}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
             <div className="flex justify-end mt-4">
               <Button onClick={handleApprovePlan}>Approve Plan</Button>
             </div>

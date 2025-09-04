@@ -1,4 +1,3 @@
-// GoalDecomposition
 'use server';
 /**
  * @fileOverview Goal decomposition AI agent.
@@ -16,14 +15,34 @@ const GoalDecompositionInputSchema = z.object({
 });
 export type GoalDecompositionInput = z.infer<typeof GoalDecompositionInputSchema>;
 
-const GoalDecompositionOutputSchema = z.object({
-  tasks: z
+const MoveSchema = z.object({
+  task: z.string().describe('The description of the task.'),
+  dueDate: z
+    .string()
+    .describe(
+      'A suggested due date for the task, which can be a relative date (e.g., "in 2 weeks") or a specific date.'
+    ),
+  resources: z
     .array(z.string())
-    .describe('The list of tasks decomposed from the high-level goal.'),
+    .describe(
+      'A list of suggested resources, websites, or actions to help accomplish the task.'
+    ),
 });
-export type GoalDecompositionOutput = z.infer<typeof GoalDecompositionOutputSchema>;
 
-export async function goalDecomposition(input: GoalDecompositionInput): Promise<GoalDecompositionOutput> {
+const GoalDecompositionOutputSchema = z.object({
+  moves: z
+    .array(MoveSchema)
+    .describe(
+      'The sequenced list of moves (tasks) decomposed from the high-level goal.'
+    ),
+});
+export type GoalDecompositionOutput = z.infer<
+  typeof GoalDecompositionOutputSchema
+>;
+
+export async function goalDecomposition(
+  input: GoalDecompositionInput
+): Promise<GoalDecompositionOutput> {
   return goalDecompositionFlow(input);
 }
 
@@ -31,11 +50,18 @@ const prompt = ai.definePrompt({
   name: 'goalDecompositionPrompt',
   input: {schema: GoalDecompositionInputSchema},
   output: {schema: GoalDecompositionOutputSchema},
-  prompt: `You are an expert project manager. Your job is to take a high-level goal and decompose it into a list of actionable tasks.
+  prompt: `You are an expert project manager and strategic planner. Your job is to take a high-level goal and decompose it into a sequence of actionable "moves" (tasks).
+
+For each move, you must provide:
+1.  A clear 'task' description.
+2.  A suggested 'dueDate' (e.g., "in 1 week", "by Friday", "on 2024-12-25").
+3.  An array of helpful 'resources' (e.g., "Look up flights on Google Flights", "Use Agoda.com to find hotels", "Read articles on effective marketing").
+
+The moves should be in a logical order of execution. Be creative and insightful with your suggestions.
 
 Goal: {{{goal}}}
 
-Tasks:`,
+Return the response as a JSON object following the defined output schema.`,
 });
 
 const goalDecompositionFlow = ai.defineFlow(

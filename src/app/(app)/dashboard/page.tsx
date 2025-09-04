@@ -13,6 +13,8 @@ export type Move = {
   priority: "Critical" | "High" | "Normal";
   campaign: string;
   status: "To-Do" | "In Progress" | "Done";
+  dueDate?: string;
+  resources?: string[];
 };
 
 export type Campaign = {
@@ -50,12 +52,14 @@ export default function DashboardPage() {
     const newCampaign: Campaign = {
         id: `campaign-${Date.now()}`,
         title: plan.goal,
-        moves: plan.tasks.map((task, index) => ({
+        moves: plan.moves.map((move, index) => ({
             id: `move-${Date.now()}-${index}`,
-            title: task,
+            title: move.task,
             priority: "Normal",
             campaign: plan.goal,
             status: "To-Do",
+            dueDate: move.dueDate,
+            resources: move.resources,
         }))
     };
     setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);

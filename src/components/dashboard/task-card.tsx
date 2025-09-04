@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Clock, Info, BrainCircuit } from "lucide-react";
+import { Clock, Info, BrainCircuit, Calendar, Link as LinkIcon } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -100,6 +100,12 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
           <p className={cn("text-sm font-medium", isCompleted && "line-through")}>
             {move.title}
           </p>
+          {move.dueDate && (
+             <p className="text-xs text-muted-foreground flex items-center gap-1.5 pt-0.5">
+                <Calendar className="h-3 w-3" />
+                {move.dueDate}
+            </p>
+          )}
         </div>
         <Badge variant="outline" className={cn("hidden sm:inline-flex text-xs", priorityColors[move.priority])}>
           {move.priority}
@@ -139,7 +145,27 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
               Campaign: {move.campaign}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-4 space-y-4">
+             {move.dueDate && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    Due: {move.dueDate}
+                </div>
+             )}
+             {move.resources && move.resources.length > 0 && (
+                <div>
+                    <h4 className="font-medium text-sm mb-2 text-muted-foreground">Suggested Resources</h4>
+                     <ul className="list-inside space-y-1 text-sm pl-2">
+                        {move.resources.map((res, i) => (
+                            <li key={i} className="flex items-center gap-2">
+                                <LinkIcon className="h-3 w-3 text-primary/80"/>
+                                {res}
+                            </li>)
+                        )}
+                    </ul>
+                </div>
+             )}
+
             <ResourceReconnaissance taskDescription={move.title} isOpen={isDetailsModalOpen} />
           </div>
         </DialogContent>
@@ -182,7 +208,7 @@ function ResourceReconnaissance({ taskDescription, isOpen }: { taskDescription: 
         <div className="space-y-4">
           {assistance?.suggestedFiles && assistance.suggestedFiles.length > 0 && (
             <div>
-              <h4 className="font-medium text-sm mb-2 text-muted-foreground">Suggested Files</h4>
+              <h4 className="font-medium text-sm mb-2 text-muted-foreground">Suggested Files from Drive</h4>
               <ul className="list-disc list-inside space-y-1 text-sm pl-2">
                 {assistance.suggestedFiles.map((file, i) => <li key={i}>{file}</li>)}
               </ul>
@@ -190,14 +216,14 @@ function ResourceReconnaissance({ taskDescription, isOpen }: { taskDescription: 
           )}
           {assistance?.suggestedResources && assistance.suggestedResources.length > 0 && (
             <div>
-              <h4 className="font-medium text-sm mb-2 text-muted-foreground">Suggested Resources</h4>
+              <h4 className="font-medium text-sm mb-2 text-muted-foreground">Other Suggested Resources</h4>
               <ul className="list-disc list-inside space-y-1 text-sm pl-2">
                  {assistance.suggestedResources.map((res, i) => <li key={i}>{res}</li>)}
               </ul>
             </div>
           )}
           {!assistance?.suggestedFiles?.length && !assistance?.suggestedResources?.length && (
-            <p className="text-sm text-muted-foreground">No specific resources found for this task.</p>
+            <p className="text-sm text-muted-foreground">No additional resources found for this task.</p>
           )}
         </div>
       )}
