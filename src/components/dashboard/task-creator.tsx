@@ -23,7 +23,7 @@ export function TaskCreator() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         recognitionRef.current = new SpeechRecognition();
         recognitionRef.current.continuous = false;
         recognitionRef.current.interimResults = false;
@@ -90,7 +90,10 @@ export function TaskCreator() {
   const stopListening = () => {
       if (recognitionRef.current) {
           setIsListening(false);
-          recognitionRef.current.stop();
+          // It may be that the recognition is already stopped.
+          try {
+            recognitionRef.current.stop();
+          } catch(e) {}
       }
   };
 
@@ -241,10 +244,4 @@ export function TaskCreator() {
       </Dialog>
     </>
   );
-}
-
-// @ts-ignore
-interface Window {
-  SpeechRecognition: typeof SpeechRecognition;
-  webkitSpeechRecognition: typeof SpeechRecognition;
 }
