@@ -1,17 +1,20 @@
 
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { Header } from "@/components/dashboard/header";
 import { Campaign } from "@/components/dashboard/campaign";
 import type { Campaign as CampaignType } from "@/app/(app)/dashboard/page";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target } from 'lucide-react';
 
+// In a real app, this would be fetched from a database or a global state manager.
+// For now, we'll use local state to avoid passing complex objects in URL.
+const initialCampaigns: CampaignType[] = [];
+
 export default function CampaignsPage() {
-    const searchParams = useSearchParams();
-    const campaignsString = searchParams.get('campaigns');
-    const campaigns: CampaignType[] = campaignsString ? JSON.parse(campaignsString) : [];
+    // This state would ideally be synced with the dashboard.
+    const [campaigns, setCampaigns] = useState<CampaignType[]>(initialCampaigns);
 
     return (
         <>
@@ -20,7 +23,7 @@ export default function CampaignsPage() {
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline flex items-center gap-2"><Target className="text-primary"/>Campaigns</CardTitle>
-                        <CardDescription>This is where you manage your long-term goals or "Campaigns".</CardDescription>
+                        <CardDescription>This is where you manage your long-term goals or "Campaigns". Campaigns you create on the dashboard will appear here.</CardDescription>
                     </CardHeader>
                 </Card>
                 {campaigns.length > 0 ? (

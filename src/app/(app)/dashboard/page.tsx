@@ -1,6 +1,5 @@
 'use client';
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Header } from "@/components/dashboard/header";
 import { CampaignCreator, CampaignPlan } from "@/components/dashboard/campaign-creator";
 import { DailyStrategy } from "@/components/dashboard/daily-strategy";
@@ -48,15 +47,7 @@ const initialCampaigns: Campaign[] = [];
 export default function DashboardPage() {
   const [moves, setMoves] = useState(initialMoves);
   const [campaigns, setCampaigns] = useState(initialCampaigns);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (campaigns.length > 0) {
-      const campaignsString = JSON.stringify(campaigns);
-      router.push(`/campaigns?campaigns=${encodeURIComponent(campaignsString)}`);
-    }
-  }, [campaigns, router]);
-
+  
   const addCampaign = (plan: CampaignPlan) => {
     const newCampaign: Campaign = {
         id: `campaign-${Date.now()}`,
