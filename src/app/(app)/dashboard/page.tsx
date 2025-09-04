@@ -1,11 +1,12 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/dashboard/header";
 import { CampaignCreator, CampaignPlan } from "@/components/dashboard/campaign-creator";
 import { DailyStrategy } from "@/components/dashboard/daily-strategy";
 import { WeeklyReview } from "@/components/dashboard/weekly-review";
 import { TaskCreator } from "@/components/dashboard/task-creator";
-import { Campaign } from "@/components/dashboard/campaign";
+import { Campaign as CampaignComponent } from "@/components/dashboard/campaign";
 
 export type Move = {
   id: string;
@@ -47,6 +48,14 @@ const initialCampaigns: Campaign[] = [];
 export default function DashboardPage() {
   const [moves, setMoves] = useState(initialMoves);
   const [campaigns, setCampaigns] = useState(initialCampaigns);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (campaigns.length > 0) {
+      const campaignsString = JSON.stringify(campaigns);
+      router.push(`/campaigns?campaigns=${encodeURIComponent(campaignsString)}`);
+    }
+  }, [campaigns, router]);
 
   const addCampaign = (plan: CampaignPlan) => {
     const newCampaign: Campaign = {
@@ -85,7 +94,7 @@ export default function DashboardPage() {
             <TaskCreator onTaskAdded={addTask} />
             <CampaignCreator onPlanApproved={addCampaign} />
             {campaigns.map(campaign => (
-                <Campaign key={campaign.id} campaign={campaign} />
+                <CampaignComponent key={campaign.id} campaign={campaign} />
             ))}
           </div>
           <div className="lg:col-span-1 xl:col-span-1 space-y-8">

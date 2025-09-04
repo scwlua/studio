@@ -9,6 +9,10 @@ interface CampaignProps {
 }
 
 export function Campaign({ campaign }: CampaignProps) {
+    if (!campaign) {
+        return null;
+    }
+    
     return (
         <Card>
             <CardHeader>
