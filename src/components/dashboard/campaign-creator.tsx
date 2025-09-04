@@ -7,8 +7,13 @@ import { goalDecomposition, GoalDecompositionOutput } from '@/ai/flows/goal-deco
 import { BrainCircuit, Check, Loader2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+export interface CampaignPlan {
+  goal: string;
+  tasks: string[];
+}
+
 interface CampaignCreatorProps {
-  onPlanApproved: (tasks: { title: string }[]) => void;
+  onPlanApproved: (plan: CampaignPlan) => void;
 }
 
 export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
@@ -40,13 +45,13 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
   };
 
   const handleApprovePlan = () => {
-    if (decomposedTasks && decomposedTasks.tasks) {
-      onPlanApproved(decomposedTasks.tasks.map(t => ({title: t})));
+    if (decomposedTasks && decomposedTasks.tasks && goal) {
+      onPlanApproved({ goal, tasks: decomposedTasks.tasks });
+      toast({
+        title: "Campaign Created!",
+        description: `The "${goal}" campaign has been added to your board.`,
+      });
     }
-    toast({
-      title: "Plan Approved!",
-      description: "The new moves have been added to your board.",
-    });
     setDecomposedTasks(null);
     setGoal('');
   };
@@ -85,7 +90,7 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
 
         {decomposedTasks && decomposedTasks.tasks.length > 0 && (
           <div className="mt-6">
-            <h3 className="font-semibold font-headline mb-3">Suggested Moves:</h3>
+            <h3 className="font-semibold font-headline mb-3">Suggested Moves for "{goal}":</h3>
             <ul className="space-y-2">
               {decomposedTasks.tasks.map((task, index) => (
                 <li key={index} className="flex items-start gap-3 bg-secondary/60 p-3 rounded-md transition-all animate-in fade-in-50 slide-in-from-bottom-2">

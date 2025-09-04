@@ -1,50 +1,73 @@
 'use client';
 import { useState } from "react";
 import { Header } from "@/components/dashboard/header";
-import { CampaignCreator } from "@/components/dashboard/campaign-creator";
+import { CampaignCreator, CampaignPlan } from "@/components/dashboard/campaign-creator";
 import { DailyStrategy } from "@/components/dashboard/daily-strategy";
 import { WeeklyReview } from "@/components/dashboard/weekly-review";
 import { TaskCreator } from "@/components/dashboard/task-creator";
+import { Campaign } from "@/components/dashboard/campaign";
+
+export type Move = {
+  id: string;
+  title: string;
+  priority: "Critical" | "High" | "Normal";
+  campaign: string;
+  status: "To-Do" | "In Progress" | "Done";
+};
+
+export type Campaign = {
+    id: string;
+    title: string;
+    moves: Move[];
+};
+
 
 // This would typically come from a database
-const initialMoves = [
+const initialMoves: Move[] = [
   {
     id: "other-1",
     title: "Review Q3 performance data",
-    priority: "High" as const,
+    priority: "High",
     campaign: "Get Promotion",
-    status: "In Progress" as const,
+    status: "In Progress",
   },
   {
     id: "other-2",
     title: "Draft first episode script",
-    priority: "High" as const,
+    priority: "High",
     campaign: "Launch Podcast Q4",
-    status: "To-Do" as const,
+    status: "To-Do",
   },
 ];
 
+const initialCampaigns: Campaign[] = [];
+
 export default function DashboardPage() {
   const [moves, setMoves] = useState(initialMoves);
+  const [campaigns, setCampaigns] = useState(initialCampaigns);
 
-  const addMoves = (newMoves: { title: string }[]) => {
-    const movesToAdd = newMoves.map((move, index) => ({
-      id: `new-move-${Date.now()}-${index}`,
-      title: move.title,
-      priority: "Normal" as const,
-      campaign: "New Campaign",
-      status: "To-Do" as const,
-    }));
-    setMoves(prevMoves => [...prevMoves, ...movesToAdd]);
+  const addCampaign = (plan: CampaignPlan) => {
+    const newCampaign: Campaign = {
+        id: `campaign-${Date.now()}`,
+        title: plan.goal,
+        moves: plan.tasks.map((task, index) => ({
+            id: `move-${Date.now()}-${index}`,
+            title: task,
+            priority: "Normal",
+            campaign: plan.goal,
+            status: "To-Do",
+        }))
+    };
+    setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);
   };
 
   const addTask = (taskTitle: string) => {
-    const newTask = {
+    const newTask: Move = {
       id: `new-task-${Date.now()}`,
       title: taskTitle,
-      priority: "Normal" as const,
+      priority: "Normal",
       campaign: "General",
-      status: "To-Do" as const,
+      status: "To-Do",
     };
     setMoves(prevMoves => [newTask, ...prevMoves]);
   };
@@ -56,8 +79,10 @@ export default function DashboardPage() {
         <div className="grid gap-8 lg:grid-cols-3 xl:grid-cols-4">
           <div className="lg:col-span-2 xl:col-span-3 space-y-8">
             <TaskCreator onTaskAdded={addTask} />
-            <CampaignCreator onPlanApproved={addMoves} />
-            {/* A list of active campaigns could be rendered here */}
+            <CampaignCreator onPlanApproved={addCampaign} />
+            {campaigns.map(campaign => (
+                <Campaign key={campaign.id} campaign={campaign} />
+            ))}
           </div>
           <div className="lg:col-span-1 xl:col-span-1 space-y-8">
             <DailyStrategy moves={moves} />

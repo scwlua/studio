@@ -27,18 +27,15 @@ import { proactiveProcrastinationAssistant, ProactiveProcrastinationAssistantOut
 import { provideContextualAssistance, ContextualAssistanceOutput } from "@/ai/flows/contextual-ai-assistance";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import type { Move } from "@/app/(app)/dashboard/page";
 
-type Move = {
-  id: string;
-  title: string;
-  priority: "Critical" | "High" | "Normal";
-  campaign: string;
-  status: "To-Do" | "In Progress" | "Done";
+interface TaskCardProps {
+  move: Move;
   isFocus?: boolean;
   isQuickWin?: boolean;
-};
+}
 
-export function TaskCard({ move }: { move: Move }) {
+export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
   const [isCompleted, setIsCompleted] = useState(move.status === 'Done');
   const [deferralCount, setDeferralCount] = useState(0);
   const [isProcrastinationAlertOpen, setIsProcrastinationAlertOpen] = useState(false);
@@ -89,7 +86,7 @@ export function TaskCard({ move }: { move: Move }) {
         className={cn(
           "group flex items-center gap-3 p-2.5 rounded-lg border bg-card transition-all hover:bg-secondary/60",
           isCompleted && "bg-secondary/40 opacity-50",
-          move.isFocus && "border-primary/50 shadow-sm shadow-primary/20"
+          isFocus && "border-primary/50 shadow-sm shadow-primary/20"
         )}
       >
         <Checkbox

@@ -1,34 +1,24 @@
+'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Move, Star, Zap } from "lucide-react";
+import { Move as MoveIcon, Star, Zap } from "lucide-react";
 import { TaskCard } from "./task-card";
-
-type Move = {
-  id: string;
-  title: string;
-  priority: "Critical" | "High" | "Normal";
-  campaign: string;
-  status: "To-Do" | "In Progress" | "Done";
-  isFocus?: boolean;
-  isQuickWin?: boolean;
-};
+import type { Move } from '@/app/(app)/dashboard/page'
 
 
-const focusMove = {
+const focusMove: Move = {
   id: "focus-1",
   title: "Wireframe key pages",
-  priority: "Critical" as const,
+  priority: "Critical",
   campaign: "Launch Podcast Q4",
-  status: "To-Do" as const,
-  isFocus: true,
+  status: "To-Do",
 };
 
-const quickWin = {
+const quickWin: Move = {
   id: "quick-1",
   title: "Email team about standup time change",
-  priority: "Normal" as const,
+  priority: "Normal",
   campaign: "General",
-  status: "To-Do" as const,
-  isQuickWin: true,
+  status: "To-Do",
 };
 
 export function DailyStrategy({ moves }: { moves: Move[] }) {
@@ -44,7 +34,7 @@ export function DailyStrategy({ moves }: { moves: Move[] }) {
             <Star className="h-4 w-4" />
             Focus Move
           </h3>
-          <TaskCard move={focusMove} />
+          <TaskCard move={focusMove} isFocus={true}/>
         </div>
 
         <div>
@@ -52,12 +42,12 @@ export function DailyStrategy({ moves }: { moves: Move[] }) {
             <Zap className="h-4 w-4" />
             Quick Win
           </h3>
-          <TaskCard move={quickWin} />
+          <TaskCard move={quickWin} isQuickWin={true} />
         </div>
 
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <Move className="h-4 w-4" />
+            <MoveIcon className="h-4 w-4" />
             Other Moves
           </h3>
           <div className="space-y-2">
