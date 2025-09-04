@@ -35,6 +35,15 @@ export function CampaignCreator() {
     }
   };
 
+  const handleApprovePlan = () => {
+    toast({
+      title: "Plan Approved!",
+      description: "The new moves have been added to your board.",
+    });
+    setDecomposedTasks(null);
+    setGoal('');
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -79,7 +88,7 @@ export function CampaignCreator() {
               ))}
             </ul>
             <div className="flex justify-end mt-4">
-              <Button>Approve Plan</Button>
+              <Button onClick={handleApprovePlan}>Approve Plan</Button>
             </div>
           </div>
         )}
