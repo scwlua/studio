@@ -94,7 +94,7 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
           </div>
         )}
 
-        {decomposedPlan && decomposedPlan.moves.length > 0 && (
+        {decomposedPlan && decomposedPlan.moves && decomposedPlan.moves.length > 0 && (
           <div className="mt-6">
             <h3 className="font-semibold font-headline mb-3">Suggested Campaign for "{goal}":</h3>
             <div className="space-y-4 rounded-lg border bg-secondary/30 p-4">
@@ -117,7 +117,7 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
                             <span>{move.dueDate}</span>
                           </div>
                       </div>
-                      {move.resources.length > 0 && (
+                      {move.resources && move.resources.length > 0 && (
                         <div className="mt-2">
                           <h4 className="font-semibold text-xs mb-1.5 text-muted-foreground">Resources:</h4>
                           <ul className="space-y-1">
