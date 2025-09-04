@@ -9,7 +9,11 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert';
 
-export function TaskCreator() {
+interface TaskCreatorProps {
+  onTaskAdded: (task: string) => void;
+}
+
+export function TaskCreator({ onTaskAdded }: TaskCreatorProps) {
   const [task, setTask] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -153,6 +157,7 @@ export function TaskCreator() {
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!task) return;
+    onTaskAdded(task);
     toast({
         title: "Move Added",
         description: `"${task}" has been added to your board.`

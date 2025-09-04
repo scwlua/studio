@@ -7,7 +7,11 @@ import { goalDecomposition, GoalDecompositionOutput } from '@/ai/flows/goal-deco
 import { BrainCircuit, Check, Loader2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-export function CampaignCreator() {
+interface CampaignCreatorProps {
+  onPlanApproved: (tasks: { title: string }[]) => void;
+}
+
+export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
   const [goal, setGoal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [decomposedTasks, setDecomposedTasks] = useState<GoalDecompositionOutput | null>(null);
@@ -36,6 +40,9 @@ export function CampaignCreator() {
   };
 
   const handleApprovePlan = () => {
+    if (decomposedTasks && decomposedTasks.tasks) {
+      onPlanApproved(decomposedTasks.tasks.map(t => ({title: t})));
+    }
     toast({
       title: "Plan Approved!",
       description: "The new moves have been added to your board.",

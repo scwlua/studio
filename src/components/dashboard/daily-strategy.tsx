@@ -2,6 +2,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Move, Star, Zap } from "lucide-react";
 import { TaskCard } from "./task-card";
 
+type Move = {
+  id: string;
+  title: string;
+  priority: "Critical" | "High" | "Normal";
+  campaign: string;
+  status: "To-Do" | "In Progress" | "Done";
+  isFocus?: boolean;
+  isQuickWin?: boolean;
+};
+
+
 const focusMove = {
   id: "focus-1",
   title: "Wireframe key pages",
@@ -20,24 +31,7 @@ const quickWin = {
   isQuickWin: true,
 };
 
-const otherMoves = [
-  {
-    id: "other-1",
-    title: "Review Q3 performance data",
-    priority: "High" as const,
-    campaign: "Get Promotion",
-    status: "In Progress" as const,
-  },
-  {
-    id: "other-2",
-    title: "Draft first episode script",
-    priority: "High" as const,
-    campaign: "Launch Podcast Q4",
-    status: "To-Do" as const,
-  },
-];
-
-export function DailyStrategy() {
+export function DailyStrategy({ moves }: { moves: Move[] }) {
   return (
     <Card>
       <CardHeader>
@@ -67,7 +61,7 @@ export function DailyStrategy() {
             Other Moves
           </h3>
           <div className="space-y-2">
-            {otherMoves.map((move) => (
+            {moves.map((move) => (
               <TaskCard key={move.id} move={move} />
             ))}
           </div>
