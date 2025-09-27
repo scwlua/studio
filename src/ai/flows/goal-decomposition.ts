@@ -15,6 +15,10 @@ const GoalDecompositionInputSchema = z.object({
 });
 export type GoalDecompositionInput = z.infer<typeof GoalDecompositionInputSchema>;
 
+const InternalInputSchema = GoalDecompositionInputSchema.extend({
+  currentDate: z.string().describe('The current date.'),
+});
+
 const MoveSchema = z.object({
   task: z.string().describe('The description of the task.'),
   dueDate: z
@@ -48,16 +52,18 @@ export async function goalDecomposition(
 
 const prompt = ai.definePrompt({
   name: 'goalDecompositionPrompt',
-  input: {schema: GoalDecompositionInputSchema},
+  input: {schema: InternalInputSchema},
   output: {schema: GoalDecompositionOutputSchema},
   prompt: `You are an expert project manager and strategic planner. Your job is to take a high-level goal and decompose it into a sequence of actionable "moves" (tasks).
 
 For each move, you must provide:
 1.  A clear 'task' description.
-2.  A suggested 'dueDate' (e.g., "in 1 week", "by next Friday", "on 2024-12-25"). **All suggested dates must be in the future from the current date.**
+2.  A suggested 'dueDate' (e.g., "in 1 week", "by next Friday", "on 2024-12-25").
 3.  An array of helpful 'resources' (e.g., "Look up flights on Google Flights", "Use Agoda.com to find hotels", "Read articles on effective marketing").
 
 The moves should be in a logical order of execution. Be creative and insightful with your suggestions.
+
+Today's date is {{{currentDate}}}. **All suggested 'dueDate' values MUST be in the future, after today's date.**
 
 Goal: {{{goal}}}
 
@@ -71,7 +77,14 @@ const goalDecompositionFlow = ai.defineFlow(
     outputSchema: GoalDecompositionOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await prompt({
+      ...input,
+      currentDate: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+    });
     return output!;
   }
 );
