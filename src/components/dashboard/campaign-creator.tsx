@@ -73,7 +73,7 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
           The Opening Gambit
         </CardTitle>
         <CardDescription>
-          State your objective. The Grandmaster AI will devise a strategic plan to achieve it.
+          State your objective. The Grandmaster AI will devise a strategic campaign to achieve it.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -139,7 +139,7 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
               ))}
             </div>
             <div className="flex justify-end mt-4">
-              <Button onClick={handleApprovePlan}>Approve Plan</Button>
+              <Button onClick={handleApprovePlan}>Approve Campaign</Button>
             </div>
           </div>
         )}
