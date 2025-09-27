@@ -1,21 +1,14 @@
-
 'use client';
 
-import { useState } from 'react';
 import { Header } from "@/components/dashboard/header";
 import { Campaign } from "@/components/dashboard/campaign";
 import type { Campaign as CampaignType } from "@/app/(app)/dashboard/page";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Target } from 'lucide-react';
-
-// In a real app, this would be fetched from a database or a global state manager.
-// For now, we'll use local state to avoid passing complex objects in URL.
-const initialCampaigns: CampaignType[] = [];
+import { useCampaigns } from "@/lib/campaign-store";
 
 export default function CampaignsPage() {
-    // This state would ideally be synced with the dashboard.
-    // For now, it's separate. Adding campaigns on the dashboard will not show them here yet.
-    const [campaigns, setCampaigns] = useState<CampaignType[]>(initialCampaigns);
+    const campaigns = useCampaigns();
 
     return (
         <>

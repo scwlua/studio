@@ -1,11 +1,12 @@
 'use client';
-import { useState } from "react";
 import { Header } from "@/components/dashboard/header";
 import { CampaignCreator, CampaignPlan } from "@/components/dashboard/campaign-creator";
 import { DailyStrategy } from "@/components/dashboard/daily-strategy";
 import { WeeklyReview } from "@/components/dashboard/weekly-review";
 import { TaskCreator } from "@/components/dashboard/task-creator";
 import { Campaign as CampaignComponent } from "@/components/dashboard/campaign";
+import { useCampaigns, campaignStore } from "@/lib/campaign-store";
+import { useState } from "react";
 
 export type Move = {
   id: string;
@@ -42,11 +43,9 @@ const initialMoves: Move[] = [
   },
 ];
 
-const initialCampaigns: Campaign[] = [];
-
 export default function DashboardPage() {
   const [moves, setMoves] = useState(initialMoves);
-  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
+  const campaigns = useCampaigns();
   
   const addCampaign = (plan: CampaignPlan) => {
     const newCampaign: Campaign = {
@@ -62,7 +61,7 @@ export default function DashboardPage() {
             resources: move.resources,
         }))
     };
-    setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);
+    campaignStore.addCampaign(newCampaign);
   };
 
   const addTask = (taskTitle: string) => {
