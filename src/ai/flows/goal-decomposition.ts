@@ -54,7 +54,7 @@ const prompt = ai.definePrompt({
 
 For each move, you must provide:
 1.  A clear 'task' description.
-2.  A suggested 'dueDate' (e.g., "in 1 week", "by next Friday", "on 2024-12-25"). All suggested dates must be in the future from the current date.
+2.  A suggested 'dueDate' (e.g., "in 1 week", "by next Friday", "on 2024-12-25"). **All suggested dates must be in the future from the current date.**
 3.  An array of helpful 'resources' (e.g., "Look up flights on Google Flights", "Use Agoda.com to find hotels", "Read articles on effective marketing").
 
 The moves should be in a logical order of execution. Be creative and insightful with your suggestions.
