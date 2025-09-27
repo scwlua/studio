@@ -14,6 +14,7 @@ const initialCampaigns: CampaignType[] = [];
 
 export default function CampaignsPage() {
     // This state would ideally be synced with the dashboard.
+    // For now, it's separate. Adding campaigns on the dashboard will not show them here yet.
     const [campaigns, setCampaigns] = useState<CampaignType[]>(initialCampaigns);
 
     return (

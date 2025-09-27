@@ -46,7 +46,7 @@ const initialCampaigns: Campaign[] = [];
 
 export default function DashboardPage() {
   const [moves, setMoves] = useState(initialMoves);
-  const [campaigns, setCampaigns] = useState(initialCampaigns);
+  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
   
   const addCampaign = (plan: CampaignPlan) => {
     const newCampaign: Campaign = {
