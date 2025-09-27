@@ -16,9 +16,18 @@ export const campaignStore = {
       if (campaign.id === campaignId) {
         return {
           ...campaign,
-          moves: campaign.moves.map(move => 
-            move.id === moveId ? { ...move, status } : move
-          )
+          moves: campaign.moves.map(move => {
+            if (move.id === moveId) {
+              const updatedMove = { ...move, status };
+              if (status === 'Done') {
+                updatedMove.completedAt = new Date().toISOString();
+              } else {
+                delete updatedMove.completedAt;
+              }
+              return updatedMove;
+            }
+            return move;
+          })
         };
       }
       return campaign;

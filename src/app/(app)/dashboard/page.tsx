@@ -7,6 +7,7 @@ import { TaskCreator } from "@/components/dashboard/task-creator";
 import { Campaign as CampaignComponent } from "@/components/dashboard/campaign";
 import { useCampaigns, campaignStore } from "@/lib/campaign-store";
 import { useState } from "react";
+import { MonthlyScore } from "@/components/dashboard/monthly-score";
 
 export type Move = {
   id: string;
@@ -17,6 +18,8 @@ export type Move = {
   status: "To-Do" | "In Progress" | "Done";
   dueDate?: string;
   resources?: string[];
+  createdAt: string; // ISO 8601 date string
+  completedAt?: string; // ISO 8601 date string
 };
 
 export type Campaign = {
@@ -35,6 +38,7 @@ const initialMoves: Move[] = [
     campaignId: "campaign-promo",
     campaignTitle: "Get Promotion",
     status: "In Progress",
+    createdAt: new Date().toISOString(),
   },
   {
     id: "other-2",
@@ -43,6 +47,7 @@ const initialMoves: Move[] = [
     campaignId: "campaign-podcast",
     campaignTitle: "Launch Podcast Q4",
     status: "To-Do",
+    createdAt: new Date().toISOString(),
   },
 ];
 
@@ -52,6 +57,7 @@ export default function DashboardPage() {
   
   const addCampaign = (plan: CampaignPlan) => {
     const campaignId = `campaign-${Date.now()}`;
+    const now = new Date().toISOString();
     const newCampaign: Campaign = {
         id: campaignId,
         title: plan.goal,
@@ -64,6 +70,7 @@ export default function DashboardPage() {
             status: "To-Do",
             dueDate: move.dueDate,
             resources: move.resources,
+            createdAt: now,
         }))
     };
     campaignStore.addCampaign(newCampaign);
@@ -77,6 +84,7 @@ export default function DashboardPage() {
       campaignId: "campaign-general",
       campaignTitle: "General",
       status: "To-Do",
+      createdAt: new Date().toISOString(),
     };
     // This will not persist currently as it's not part of a campaign
     // For a real app, we'd add this to a default "General" campaign in the store
@@ -97,6 +105,7 @@ export default function DashboardPage() {
           </div>
           <div className="lg:col-span-1 xl:col-span-1 space-y-8">
             <DailyStrategy moves={moves} />
+            <MonthlyScore />
             <WeeklyReview />
           </div>
         </div>

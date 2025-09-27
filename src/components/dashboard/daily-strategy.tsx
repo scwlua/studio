@@ -12,6 +12,7 @@ const focusMove: Move = {
   campaignId: "campaign-podcast",
   campaignTitle: "Launch Podcast Q4",
   status: "To-Do",
+  createdAt: new Date().toISOString(),
 };
 
 const quickWin: Move = {
@@ -21,6 +22,7 @@ const quickWin: Move = {
   campaignId: "campaign-general",
   campaignTitle: "General",
   status: "To-Do",
+  createdAt: new Date().toISOString(),
 };
 
 export function DailyStrategy({ moves }: { moves: Move[] }) {

@@ -90,6 +90,8 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
     Normal: "border-accent-foreground/20 bg-accent/10 text-muted-foreground",
   };
 
+  if (!move) return null;
+
   return (
     <>
       <div
