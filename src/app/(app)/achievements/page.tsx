@@ -48,6 +48,12 @@ export default function AchievementsPage() {
                          <CardDescription>Honors you are close to achieving. Make your next move!</CardDescription>
                     </CardHeader>
                     <CardContent>
+                       {potentialAchievements.length === 0 && achievements.length > 0 && (
+                        <p className="text-muted-foreground">You've earned all available medals for now. Check back later!</p>
+                       )}
+                       {potentialAchievements.length === 0 && achievements.length === 0 && (
+                        <p className="text-muted-foreground">Complete your first move to see potential medals!</p>
+                       )}
                         <div className="space-y-3">
                             {potentialAchievements.map((pot) => (
                                 <div key={pot.id} className="p-3 rounded-lg border bg-secondary/50 flex items-center gap-4">

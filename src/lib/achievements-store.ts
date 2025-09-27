@@ -86,7 +86,7 @@ export const achievementsStore = {
             : (triggerId === 'first-move' ? 'First Move Complete!' : 'Five Moves Done!');
 
          const newAchievement: Achievement = {
-            id: `ach-${Date.now()}`,
+            id: `ach-fallback-${Date.now()}`,
             title: fallbackTitle,
             description: context,
             trigger: triggerId,
@@ -98,7 +98,7 @@ export const achievementsStore = {
 
   updatePotentialAchievements() {
     state.potentialAchievements = potentialAchievements.filter(pa => 
-        !state.achievements.some(a => a.trigger === pa.id)
+        !state.achievements.some(a => a.trigger.startsWith(pa.id))
     );
   },
 
