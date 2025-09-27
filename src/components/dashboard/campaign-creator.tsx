@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { goalDecomposition, GoalDecompositionOutput } from '@/ai/flows/goal-decomposition';
-import { BrainCircuit, Calendar, Check, Link, Loader2, Wand2 } from 'lucide-react';
+import { BrainCircuit, Calendar, Check, Link, Loader2, Wand2, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
+import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 
 export interface CampaignPlan {
@@ -14,6 +15,7 @@ export interface CampaignPlan {
   moves: Array<{
     task: string;
     dueDate: string;
+    priority: "Critical" | "High" | "Normal";
     resources: string[];
   }>;
 }
@@ -65,6 +67,12 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
     setGoal('');
   };
 
+  const priorityColors = {
+    Critical: "border-primary/50 bg-primary/10 text-primary",
+    High: "border-orange-400/50 bg-orange-400/10 text-orange-400",
+    Normal: "border-accent-foreground/20 bg-accent/10 text-muted-foreground",
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -114,10 +122,14 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
                     </div>
                     <div className="flex-1">
                       <p className="font-medium">{move.task}</p>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1 flex-wrap">
                           <div className="flex items-center gap-1.5">
                             <Calendar className="h-4 w-4" />
                             <span>{move.dueDate}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <ShieldAlert className="h-4 w-4" />
+                            <span className={cn("font-medium", priorityColors[move.priority])}>{move.priority} Priority</span>
                           </div>
                       </div>
                       {move.resources && move.resources.length > 0 && (

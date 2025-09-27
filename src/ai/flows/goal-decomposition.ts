@@ -26,6 +26,9 @@ const MoveSchema = z.object({
     .describe(
       'A suggested due date for the task, which can be a relative date (e.g., "in 2 weeks") or a specific date.'
     ),
+  priority: z
+    .enum(['Critical', 'High', 'Normal'])
+    .describe('The AI-determined priority of the task.'),
   resources: z
     .array(z.string())
     .describe(
@@ -58,10 +61,11 @@ const prompt = ai.definePrompt({
 
 For each move, you must provide:
 1.  A clear 'task' description.
-2.  A suggested 'dueDate' (e.g., "in 1 week", "by next Friday", "on 2024-12-25").
-3.  An array of helpful 'resources' (e.g., "Look up flights on Google Flights", "Use Agoda.com to find hotels", "Read articles on effective marketing").
+2.  A suggested 'dueDate'.
+3.  An AI-determined 'priority' ('Critical', 'High', or 'Normal') based on the task's importance and sequence.
+4.  An array of helpful 'resources' (e.g., "Look up flights on Google Flights", "Use Agoda.com to find hotels").
 
-The moves should be in a logical order of execution. Be creative and insightful with your suggestions.
+The moves should be in a logical order. Be creative and insightful.
 
 Today's date is {{{currentDate}}}. **All suggested 'dueDate' values MUST be in the future, after today's date.**
 

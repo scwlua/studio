@@ -9,7 +9,8 @@ const focusMove: Move = {
   id: "focus-1",
   title: "Wireframe key pages",
   priority: "Critical",
-  campaign: "Launch Podcast Q4",
+  campaignId: "campaign-podcast",
+  campaignTitle: "Launch Podcast Q4",
   status: "To-Do",
 };
 
@@ -17,7 +18,8 @@ const quickWin: Move = {
   id: "quick-1",
   title: "Email team about standup time change",
   priority: "Normal",
-  campaign: "General",
+  campaignId: "campaign-general",
+  campaignTitle: "General",
   status: "To-Do",
 };
 

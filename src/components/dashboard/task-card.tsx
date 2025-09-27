@@ -29,6 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import type { Move } from "@/app/(app)/dashboard/page";
 import { achievementsStore } from "@/lib/achievements-store";
+import { campaignStore } from "@/lib/campaign-store";
 
 interface TaskCardProps {
   move: Move;
@@ -61,7 +62,7 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
     if (newCount > 1) { // Trigger on second deferral
       const result = await proactiveProcrastinationAssistant({
         taskTitle: move.title,
-        taskDescription: `This task is part of the ${move.campaign} campaign and has a ${move.priority} priority.`,
+        taskDescription: `This task is part of the ${move.campaignTitle} campaign and has a ${move.priority} priority.`,
         deferralCount: newCount,
       });
       setProcrastinationSuggestion(result);
@@ -70,15 +71,16 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
   };
 
   const handleComplete = (checked: boolean) => {
+    const newStatus = checked ? 'Done' : 'To-Do';
     setIsCompleted(checked);
+    campaignStore.updateMoveStatus(move.campaignId, move.id, newStatus);
+    
     if(checked) {
       achievementsStore.notifyMoveCompleted(move);
       toast({
         title: "Move Complete!",
         description: `You've completed "${move.title}".`,
       });
-    } else {
-        // Potentially handle un-checking a task if needed
     }
   };
 
@@ -150,7 +152,7 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
           <DialogHeader>
             <DialogTitle className="font-headline">{move.title}</DialogTitle>
             <DialogDescription>
-              Campaign: {move.campaign}
+              Campaign: {move.campaignTitle}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">

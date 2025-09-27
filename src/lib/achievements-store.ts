@@ -21,7 +21,7 @@ export type PotentialAchievement = {
 let achievements: Achievement[] = [];
 let listeners: ((data: { achievements: Achievement[], potentialAchievements: PotentialAchievement[] }) => void)[] = [];
 
-let movesCompletedSinceLastAchievement = 0;
+let movesCompletedCount = 0;
 
 const potentialAchievements: PotentialAchievement[] = [
     { id: 'first-move', title: 'Pawn\'s First Promotion', description: 'Complete your first move.' },
@@ -41,23 +41,18 @@ const emitChange = () => {
 
 export const achievementsStore = {
   async notifyMoveCompleted(move: Move) {
-    const totalCompleted = this.getSnapshot().achievements.length; // Simplified, should be total moves
-    movesCompletedSinceLastAchievement++;
+    movesCompletedCount++;
 
     let earnedNew = false;
     // Check for "First Move"
-    if (totalCompleted === 0 && !state.achievements.some(a => a.trigger === 'first-move')) {
+    if (movesCompletedCount === 1 && !state.achievements.some(a => a.trigger === 'first-move')) {
         await this.createAchievement('first-move', `Completed the first task: "${move.title}"`);
         earnedNew = true;
     } 
     // Check for "Five Moves"
-    else if (totalCompleted === 1 && movesCompletedSinceLastAchievement >= 4 && !state.achievements.some(a => a.trigger === 'five-moves')) {
+    else if (movesCompletedCount === 5 && !state.achievements.some(a => a.trigger === 'five-moves')) {
         await this.createAchievement('five-moves', `Completed five tasks, the latest being: "${move.title}"`);
         earnedNew = true;
-    }
-    
-    if (earnedNew) {
-        movesCompletedSinceLastAchievement = 0;
     }
     
     this.updatePotentialAchievements();

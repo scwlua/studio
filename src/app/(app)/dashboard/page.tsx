@@ -12,7 +12,8 @@ export type Move = {
   id: string;
   title: string;
   priority: "Critical" | "High" | "Normal";
-  campaign: string;
+  campaignId: string;
+  campaignTitle: string;
   status: "To-Do" | "In Progress" | "Done";
   dueDate?: string;
   resources?: string[];
@@ -31,14 +32,16 @@ const initialMoves: Move[] = [
     id: "other-1",
     title: "Review Q3 performance data",
     priority: "High",
-    campaign: "Get Promotion",
+    campaignId: "campaign-promo",
+    campaignTitle: "Get Promotion",
     status: "In Progress",
   },
   {
     id: "other-2",
     title: "Draft first episode script",
     priority: "High",
-    campaign: "Launch Podcast Q4",
+    campaignId: "campaign-podcast",
+    campaignTitle: "Launch Podcast Q4",
     status: "To-Do",
   },
 ];
@@ -48,14 +51,16 @@ export default function DashboardPage() {
   const campaigns = useCampaigns();
   
   const addCampaign = (plan: CampaignPlan) => {
+    const campaignId = `campaign-${Date.now()}`;
     const newCampaign: Campaign = {
-        id: `campaign-${Date.now()}`,
+        id: campaignId,
         title: plan.goal,
         moves: plan.moves.map((move, index) => ({
             id: `move-${Date.now()}-${index}`,
             title: move.task,
-            priority: "Normal",
-            campaign: plan.goal,
+            priority: move.priority,
+            campaignId: campaignId,
+            campaignTitle: plan.goal,
             status: "To-Do",
             dueDate: move.dueDate,
             resources: move.resources,
@@ -69,9 +74,12 @@ export default function DashboardPage() {
       id: `new-task-${Date.now()}`,
       title: taskTitle,
       priority: "Normal",
-      campaign: "General",
+      campaignId: "campaign-general",
+      campaignTitle: "General",
       status: "To-Do",
     };
+    // This will not persist currently as it's not part of a campaign
+    // For a real app, we'd add this to a default "General" campaign in the store
     setMoves(prevMoves => [newTask, ...prevMoves]);
   };
 

@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import type { Campaign } from "@/app/(app)/dashboard/page";
+import type { Campaign, Move } from "@/app/(app)/dashboard/page";
 
 let campaigns: Campaign[] = [];
 let listeners: ((campaigns: Campaign[]) => void)[] = [];
@@ -8,6 +8,21 @@ let listeners: ((campaigns: Campaign[]) => void)[] = [];
 export const campaignStore = {
   addCampaign(campaign: Campaign) {
     campaigns = [...campaigns, campaign];
+    emitChange();
+  },
+
+  updateMoveStatus(campaignId: string, moveId: string, status: Move['status']) {
+    campaigns = campaigns.map(campaign => {
+      if (campaign.id === campaignId) {
+        return {
+          ...campaign,
+          moves: campaign.moves.map(move => 
+            move.id === moveId ? { ...move, status } : move
+          )
+        };
+      }
+      return campaign;
+    });
     emitChange();
   },
 
