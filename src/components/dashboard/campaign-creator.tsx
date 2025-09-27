@@ -38,11 +38,14 @@ export function CampaignCreator({ onPlanApproved }: CampaignCreatorProps) {
     try {
       const result = await goalDecomposition({ goal });
       setDecomposedPlan(result);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      const isServiceUnavailable = error.message && error.message.includes('503');
       toast({
-        title: "Error",
-        description: "Failed to create campaign plan. Please try again.",
+        title: isServiceUnavailable ? "AI Service Unavailable" : "Error Creating Plan",
+        description: isServiceUnavailable 
+          ? "The AI planner is currently busy. Please try again in a moment."
+          : "Failed to create campaign plan. Please try again.",
         variant: "destructive",
       });
     } finally {
