@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect } from 'react';
 import type { Move } from "@/app/(app)/dashboard/page";
@@ -26,6 +25,7 @@ let movesCompletedCount = 0;
 const potentialAchievements: PotentialAchievement[] = [
     { id: 'first-move', title: 'Pawn\'s First Promotion', description: 'Complete your first move.' },
     { id: 'five-moves', title: 'Knight\'s Tour', description: 'Complete five moves.' },
+    { id: 'critical-move', title: 'Critical Capture', description: 'Complete a critical-priority move.' },
 ];
 
 let state = {
@@ -43,16 +43,21 @@ export const achievementsStore = {
   async notifyMoveCompleted(move: Move) {
     movesCompletedCount++;
 
-    let earnedNew = false;
     // Check for "First Move"
     if (movesCompletedCount === 1 && !state.achievements.some(a => a.trigger === 'first-move')) {
         await this.createAchievement('first-move', `Completed the first task: "${move.title}"`);
-        earnedNew = true;
     } 
     // Check for "Five Moves"
     else if (movesCompletedCount === 5 && !state.achievements.some(a => a.trigger === 'five-moves')) {
         await this.createAchievement('five-moves', `Completed five tasks, the latest being: "${move.title}"`);
-        earnedNew = true;
+    }
+    
+    // Check for "Critical Move"
+    if (move.priority === 'Critical' && !state.achievements.some(a => a.trigger === `critical-move-${move.id}`)) {
+        await this.createAchievement(
+            `critical-move-${move.id}`, // Make trigger unique to this move
+            `Completed a CRITICAL task: "${move.title}"`
+        );
     }
     
     this.updatePotentialAchievements();
@@ -76,7 +81,10 @@ export const achievementsStore = {
     } catch (e) {
         console.error("Failed to generate achievement:", e);
         // Fallback to a non-AI achievement
-         const fallbackTitle = triggerId === 'first-move' ? 'First Move Complete!' : 'Five Moves Done!';
+         const fallbackTitle = triggerId.startsWith('critical') 
+            ? 'Critical Objective Secured!'
+            : (triggerId === 'first-move' ? 'First Move Complete!' : 'Five Moves Done!');
+
          const newAchievement: Achievement = {
             id: `ach-${Date.now()}`,
             title: fallbackTitle,
