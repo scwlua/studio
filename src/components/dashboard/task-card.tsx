@@ -28,6 +28,7 @@ import { provideContextualAssistance, ContextualAssistanceOutput } from "@/ai/fl
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import type { Move } from "@/app/(app)/dashboard/page";
+import { achievementsStore } from "@/lib/achievements-store";
 
 interface TaskCardProps {
   move: Move;
@@ -43,6 +44,10 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    setIsCompleted(move.status === 'Done');
+  }, [move.status]);
 
   const handleDefer = async () => {
     const newCount = deferralCount + 1;
@@ -67,10 +72,13 @@ export function TaskCard({ move, isFocus, isQuickWin }: TaskCardProps) {
   const handleComplete = (checked: boolean) => {
     setIsCompleted(checked);
     if(checked) {
+      achievementsStore.notifyMoveCompleted(move);
       toast({
         title: "Move Complete!",
         description: `You've completed "${move.title}".`,
       });
+    } else {
+        // Potentially handle un-checking a task if needed
     }
   };
 
@@ -180,20 +188,31 @@ function ResourceReconnaissance({ taskDescription, isOpen }: { taskDescription: 
 
   useEffect(() => {
     if (!isOpen) {
+      setAssistance(null); // Clear previous results when dialog is closed
       return;
     }
+    let isCancelled = false;
+
     async function fetchAssistance() {
       setIsLoading(true);
       try {
         const result = await provideContextualAssistance({ taskDescription });
-        setAssistance(result);
+        if (!isCancelled) {
+          setAssistance(result);
+        }
       } catch (error) {
         console.error("Failed to get assistance", error);
       } finally {
-        setIsLoading(false);
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
       }
     }
     fetchAssistance();
+
+    return () => {
+      isCancelled = true;
+    }
   }, [isOpen, taskDescription]);
 
   return (
@@ -222,7 +241,7 @@ function ResourceReconnaissance({ taskDescription, isOpen }: { taskDescription: 
               </ul>
             </div>
           )}
-          {!assistance?.suggestedFiles?.length && !assistance?.suggestedResources?.length && (
+          {(!assistance?.suggestedFiles || assistance.suggestedFiles.length === 0) && (!assistance?.suggestedResources || assistance.suggestedResources.length === 0) && !isLoading && (
             <p className="text-sm text-muted-foreground">No additional resources found for this task.</p>
           )}
         </div>
